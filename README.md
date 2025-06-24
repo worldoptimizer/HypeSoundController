@@ -1,5 +1,8 @@
 # Hype Sound Controller
 
+![HypeSoundController|690x517](https://playground.maxziebell.de/Hype/SoundController/HypeSoundController.jpg)
+
+
 This is a sound management API for Tumult Hype documents, allowing for instance management, bucketing, persistent muting, and more. This extension simplifies audio handling within your Hype projects, providing a robust layer of control beyond the standard audio actions.
 
 ## Setup in Tumult Hype
