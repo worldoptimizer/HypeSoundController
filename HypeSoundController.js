@@ -1,12 +1,12 @@
 /*!
  * Hype Sound Controller v1.4.0
- * Copyright (2025) Max Ziebell, MIT License
- *
- * This extension provides a comprehensive sound management API for Hype documents,
- * allowing for instance management, bucketing, persistent muting, and more.
+ * copyright (c) 2025 Max Ziebell, (https://maxziebell.de). MIT-license
  */
 
 /*
+ * This extension provides a comprehensive sound management API for Hype documents,
+ * allowing for instance management, bucketing, persistent muting, and more.
+ * 
  * Version History:
  * v1.0.0   Initial release.
  * v1.0.1   Improved path detection and handled play() promise rejection.
