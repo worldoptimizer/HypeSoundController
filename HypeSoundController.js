@@ -1,5 +1,5 @@
 /*!
- * Hype Sound Controller v1.3.1
+ * Hype Sound Controller v1.4.0
  * Copyright (2025) Max Ziebell, MIT License
  *
  * This extension provides a comprehensive sound management API for Hype documents,
@@ -16,12 +16,16 @@
  *          on play. Added fadeIn/fadeOut (ms), getSoundsInBucket(), and 
  *          playOnlyInBucket() helper.
  * v1.3.1   Changed fadeIn and fadeOut durations from milliseconds to seconds.
+ * v1.3.2   Enhanced resumeSound() to automatically start playback if no instances
+ *          exist, making the API more intuitive for users.
+ * v1.4.0   Added automatic HypeReactiveContent integration. All state-changing
+ *          functions now trigger reactive content refresh automatically.
  */
 
 if ("HypeSoundController" in window === false) {
     window['HypeSoundController'] = (function () {
   
-    const _version = "1.3.1";
+    const _version = "1.4.0";
         let _default = {
         bucket: 'default',
         loop: false,
@@ -101,6 +105,7 @@ if ("HypeSoundController" in window === false) {
         const bucket = doc.sounds[key].bucket;
         if (!doc.buckets[bucket]) doc.buckets[bucket] = [];
         doc.buckets[bucket].push(key);
+        _triggerReactiveContentRefresh(hypeDocument);
       }
   
       function playSound(hypeDocument, key, options) {
@@ -141,6 +146,7 @@ if ("HypeSoundController" in window === false) {
             hypeDocument.triggerCustomBehaviorNamed('Audio Failed ' + key);
           });
         }
+        _triggerReactiveContentRefresh(hypeDocument);
         return audio;
       }
   
@@ -154,6 +160,7 @@ if ("HypeSoundController" in window === false) {
             audio.pause();
           });
         });
+        _triggerReactiveContentRefresh(hypeDocument);
       }
   
       function resumeSound(hypeDocument, key, options) {
@@ -161,6 +168,12 @@ if ("HypeSoundController" in window === false) {
         if (!entry) return;
         const finalOptions = Object.assign({}, entry, options);
 
+        // If there are no playing instances, start playing the sound
+        if (entry.playingInstances.length === 0) {
+          return playSound(hypeDocument, key, options);
+        }
+
+        // Resume any paused instances
         entry.playingInstances.forEach(function(audio) {
           if (audio.paused) {
             audio.play().catch(function(){});
@@ -183,6 +196,7 @@ if ("HypeSoundController" in window === false) {
             audio.currentTime = 0;
           });
         });
+        _triggerReactiveContentRefresh(hypeDocument);
       }
   
       function unloadSound(hypeDocument, key) {
@@ -195,6 +209,7 @@ if ("HypeSoundController" in window === false) {
           doc.buckets[bucket] = doc.buckets[bucket].filter(function(k) { return k !== key; });
         }
         delete doc.sounds[key];
+        _triggerReactiveContentRefresh(hypeDocument);
       }
       
       function isSoundLoaded(hypeDocument, key) {
@@ -210,6 +225,7 @@ if ("HypeSoundController" in window === false) {
         const doc = getDocRegistry(hypeDocument);
         const keys = bucket ? (doc.buckets[bucket] || []) : Object.keys(doc.sounds);
         keys.forEach(function(key) { stopSound(hypeDocument, key); });
+        _triggerReactiveContentRefresh(hypeDocument);
       }
   
       function muteAllSounds(hypeDocument, bucket) {
@@ -223,6 +239,7 @@ if ("HypeSoundController" in window === false) {
           keysToUpdate = Object.keys(doc.sounds);
         }
         _updateMuteOnPlayingInstances(doc, keysToUpdate);
+        _triggerReactiveContentRefresh(hypeDocument);
       }
   
       function unmuteAllSounds(hypeDocument, bucket) {
@@ -236,6 +253,7 @@ if ("HypeSoundController" in window === false) {
           keysToUpdate = Object.keys(doc.sounds);
         }
         _updateMuteOnPlayingInstances(doc, keysToUpdate);
+        _triggerReactiveContentRefresh(hypeDocument);
       }
   
       function isMuted(hypeDocument, bucket) {
@@ -277,6 +295,13 @@ if ("HypeSoundController" in window === false) {
           const isMuted = _isSoundMuted(doc, key);
           e.playingInstances.forEach(function(a){ a.muted = isMuted; });
         });
+      }
+
+      function _triggerReactiveContentRefresh(hypeDocument) {
+        // Check if HypeReactiveContent is available and trigger refresh
+        if (typeof hypeDocument.refreshReactiveContentDebounced === 'function') {
+          hypeDocument.refreshReactiveContentDebounced();
+        }
       }
   
       // --- Hype Integration ---
