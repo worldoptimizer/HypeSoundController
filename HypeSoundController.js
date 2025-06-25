@@ -330,4 +330,4 @@ if ("HypeSoundController" in window === false) {
       };
   
     })();
-  }
+}
