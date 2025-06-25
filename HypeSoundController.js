@@ -8,17 +8,17 @@
  * allowing for instance management, bucketing, persistent muting, and more.
  * 
  * Version History:
- * v1.0.0   Initial release.
- * v1.0.1   Improved path detection and handled play() promise rejection.
- * v1.1.0   Added Custom Behavior triggers for 'Started', 'Ended', and 'Failed'.
- * v1.2.0   Added persistent and bucket-based muting and hypeDocument.isMuted().
- * v1.3.0   stopOthers is now default. Options can be set on load and overridden
+ * 1.0.0   Initial release.
+ * 1.0.1   Improved path detection and handled play() promise rejection.
+ * 1.1.0   Added Custom Behavior triggers for 'Started', 'Ended', and 'Failed'.
+ * 1.2.0   Added persistent and bucket-based muting and hypeDocument.isMuted().
+ * 1.3.0   stopOthers is now default. Options can be set on load and overridden
  *          on play. Added fadeIn/fadeOut (ms), getSoundsInBucket(), and 
  *          playOnlyInBucket() helper.
- * v1.3.1   Changed fadeIn and fadeOut durations from milliseconds to seconds.
- * v1.3.2   Enhanced resumeSound() to automatically start playback if no instances
+ * 1.3.1   Changed fadeIn and fadeOut durations from milliseconds to seconds.
+ * 1.3.2   Enhanced resumeSound() to automatically start playback if no instances
  *          exist, making the API more intuitive for users.
- * v1.4.0   Added automatic HypeReactiveContent integration. All state-changing
+ * 1.4.0   Added automatic HypeReactiveContent integration. All state-changing
  *          functions now trigger reactive content refresh automatically.
  */
 
