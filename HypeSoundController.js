@@ -1,5 +1,5 @@
 /*!
- * Hype Sound Controller v1.4.0
+ * Hype Sound Controller v1.4.1
  * copyright (c) 2025 Max Ziebell, (https://maxziebell.de). MIT-license
  */
 
@@ -20,12 +20,14 @@
  *          exist, making the API more intuitive for users.
  * 1.4.0   Added automatic HypeReactiveContent integration. All state-changing
  *          functions now trigger reactive content refresh automatically.
+ * 1.4.1   Fixed missing reactive content refresh calls in audio ended, failed,
+ *          and resume scenarios to ensure complete HypeReactiveContent integration.
  */
 
 if ("HypeSoundController" in window === false) {
     window['HypeSoundController'] = (function () {
   
-    const _version = "1.4.0";
+    const _version = "1.4.1";
         let _default = {
         bucket: 'default',
         loop: false,
@@ -64,7 +66,7 @@ if ("HypeSoundController" in window === false) {
       function _fadeVolume(audio, targetVolume, duration, onComplete) {
         if (audio._fadeInterval) clearInterval(audio._fadeInterval);
         
-        // UPDATED: Convert duration from seconds to milliseconds for internal use
+        // Convert duration from seconds to milliseconds for internal use
         const durationMs = duration * 1000;
 
         if (!durationMs) {
@@ -129,6 +131,7 @@ if ("HypeSoundController" in window === false) {
           hypeDocument.triggerCustomBehaviorNamed('Audio Ended ' + key);
           const idx = entry.playingInstances.indexOf(audio);
           if (idx !== -1) entry.playingInstances.splice(idx, 1);
+          _triggerReactiveContentRefresh(hypeDocument);
         });
 
         entry.playingInstances.push(audio);
@@ -144,6 +147,7 @@ if ("HypeSoundController" in window === false) {
             if (idx !== -1) entry.playingInstances.splice(idx, 1);
             hypeDocument.triggerCustomBehaviorNamed('Audio Failed');
             hypeDocument.triggerCustomBehaviorNamed('Audio Failed ' + key);
+            _triggerReactiveContentRefresh(hypeDocument);
           });
         }
         _triggerReactiveContentRefresh(hypeDocument);
@@ -180,6 +184,7 @@ if ("HypeSoundController" in window === false) {
             _fadeVolume(audio, finalOptions.volume, finalOptions.fadeIn);
           }
         });
+        _triggerReactiveContentRefresh(hypeDocument);
       }
   
       function stopSound(hypeDocument, key, options) {
